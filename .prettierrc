@@ -1,0 +1,20 @@
+{
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": "**/lwc/**/*.html",
+      "options": { "parser": "lwc" }
+    },
+    {
+      "files": "*.{cmp,page,component}",
+      "options": { "parser": "html" }
+    },
+    {
+      "files": "*.cls",
+      "options": { 
+        "parser": "apex",
+        "plugins": ["./node_modules/prettier-plugin-apex"]
+      }
+    }
+  ]
+}
