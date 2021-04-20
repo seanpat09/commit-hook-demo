@@ -20,6 +20,7 @@
     "@salesforce/eslint-config-lwc": "^0.7.0",
     "@salesforce/eslint-plugin-aura": "^1.4.0",
     "@salesforce/sfdx-lwc-jest": "^0.9.2",
+    "cspell": "^5.3.12",
     "eslint": "^7.6.0",
     "eslint-config-prettier": "^6.11.0",
     "husky": "^4.2.1",
@@ -29,12 +30,15 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && npm run lint"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
     "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
       "prettier --write"
+    ],
+    "*.{cls,apex,js,html,md,xml,sql,py,yml,yaml}": [
+      "cspell"
     ],
     "**/{aura|lwc}/**": [
       "eslint"
