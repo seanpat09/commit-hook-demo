@@ -1,0 +1,13 @@
+{
+  // See https://github.com/streetsidesoftware/cspell/tree/master/packages/cspell#cspelljson-sections
+  // for more information.
+  // Always 0.1
+  "version": "0.1",
+  "language": "en-US",
+  // List of words to be considered correct.
+  "words": ["blorld"],
+  // List of words to be always considered incorrect.
+  "flagWords": [],
+  // defaults to 4 - the minimum length of a word before it is checked.
+  "minWordLength": 5
+}
