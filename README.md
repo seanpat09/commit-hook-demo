@@ -1,18 +1,118 @@
-# Salesforce DX Project: Next Steps
+# Commit Hooks with SFDX
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## Setup this demo
 
-## How Do You Plan to Deploy Your Changes?
+Pull down this repo and run `npm install` and that's it! Every commit you make will run the following commit hooks. You can copy the `package.json`, `cspell.json`, and the `.prettierrc` files in this repo as a quick a template to apply these commit hooks into your repo.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+* Prettier - automatically formats your code before the commit
+* cspell - checks the spelling in your code and throws an error if it finds any spelling mistakes
 
-## Configure Your Salesforce DX Project
+## Commit Hooks
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+When you create a new SFDX project in VS code, a `package.json` file is added to your project with some defaults that sets you up with commit hooks. If you don't, follow this blog to setup your `package.json` file to include husky, a tool needed to run commit hooks: https://developer.salesforce.com/blogs/2019/07/live-coding-continuous-integration-with-salesforce.html
 
-## Read All About It
+### Setup `prettier` and `prettier-plugin-apex`
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+`prettier` and `prettier-plugin-apex` are two npm packages that are used to format your text and are included by default in your `package.json` dev dependencies. 
+See the documentation at their respective pages:
+
+* https://prettier.io/
+* https://github.com/dangmai/prettier-plugin-apex
+
+If they are not included, install them with the following:
+
+```
+npm install prettier --save-dev
+npm install prettier-plugin-apex --save-dev
+```
+
+Next update the .prettierrc file with the following.
+
+```
+{
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": "**/lwc/**/*.html",
+      "options": { "parser": "lwc" }
+    },
+    {
+      "files": "*.{cmp,page,component}",
+      "options": { "parser": "html" }
+    },
+    {
+      "files": "*.cls",
+      "options": { 
+        "parser": "apex",
+        "plugins": ["./node_modules/prettier-plugin-apex"]
+      }
+    }
+  ]
+}
+```
+
+The key part that doesn't come included is the following block, which allows prettier to work with apex class files, so make sure to add it even if you already have `.prettierc` in your repo.
+
+```
+    {
+      "files": "*.cls",
+      "options": { 
+        "parser": "apex",
+        "plugins": ["./node_modules/prettier-plugin-apex"]
+      }
+    }
+```
+
+### Setup `cspell`
+
+`cspell` is a package that does spell checking. Check out their git repo for advanced documentation: https://github.com/streetsidesoftware/cspell
+
+Install with the following:
+
+
+```
+npm install cspell --save-dev
+```
+
+## Setup `husky`
+
+The last thing we need to do is set up husky in `package.json` so that we run our pre-commit hooks. Make sure the following is included in your `package.json` file:
+
+```
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
+      "prettier --write"
+    ],
+    "*.{cls,apex,js,html,md,xml,sql,py,yml,yaml}": [
+      "cspell"
+    ]
+  }
+```
+
+Let's break this down. The following property is telling husky to run the `lint-staged` as a pre-commit hook.
+```
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+```
+
+The following property is defining `lint-staged`. Each property key in the `lint-staged` object specifies file name patterns, and the propety itself is an array of commands to run for those files. In this case, we specify files to run `prettier --write` on and a list of files to run `cspell` on.
+```
+  "lint-staged": {
+    "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
+      "prettier --write"
+    ],
+    "*.{cls,apex,js,html,md,xml,sql,py,yml,yaml}": [
+      "cspell"
+    ]
+  }
+```
+
+After you are done setting this all up you may need to run `npm rebuild`. I'm not sure if this is necessary, but I did need to do it to get my commit hooks to start running on each commit.
